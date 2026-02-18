@@ -1,0 +1,11 @@
+name = "codingship-worker"
+main = "worker/src/index.ts"
+compatibility_date = "2025-01-01"
+
+[vars]
+APP_ORIGIN = "http://localhost:3000"
+R2_BUCKET_NAME = "codingship-assets"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "replace-with-kv-id"
