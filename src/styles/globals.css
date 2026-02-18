@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 220 30% 98%;
+  --panel: 220 28% 96%;
+  --text: 220 24% 12%;
+  --subtle: 220 12% 45%;
+  --border: 220 18% 84%;
+  --accent: 220 92% 55%;
+  --vivid: 16 95% 62%;
+}
+
+.dark {
+  --bg: 220 24% 8%;
+  --panel: 220 22% 12%;
+  --text: 220 20% 93%;
+  --subtle: 220 10% 68%;
+  --border: 220 15% 22%;
+  --accent: 220 100% 62%;
+  --vivid: 20 92% 66%;
+}
+
+body {
+  @apply bg-bg text-text antialiased;
+}
+
+.point::before {
+  content: "";
+  @apply mr-3 inline-block h-2.5 w-2.5 rounded-full bg-black dark:bg-white align-middle;
+}
+
+.dot-pulse {
+  animation: pulse 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-pulse {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 1;
+  }
+}
