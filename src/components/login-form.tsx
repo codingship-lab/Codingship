@@ -4,7 +4,7 @@ import { useState } from "react";
 import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabaseBrowser } from "@/lib/supabase";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export function LoginForm() {
   const supabase = supabaseBrowser();

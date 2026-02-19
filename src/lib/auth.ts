@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase";
+import { supabaseServer } from "@/lib/supabase-server";
 
 export async function getCurrentUserRole() {
   const supabase = supabaseServer();
