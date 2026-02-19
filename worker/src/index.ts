@@ -2,13 +2,18 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { z } from "zod";
 
+type RateLimitKV = {
+  get: (key: string) => Promise<string | null>;
+  put: (key: string, value: string, options?: { expirationTtl?: number }) => Promise<void>;
+};
+
 type Env = {
   APP_ORIGIN: string;
   TURNSTILE_SECRET_KEY: string;
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
   R2_BUCKET_NAME: string;
-  RATE_LIMIT_KV: KVNamespace;
+  RATE_LIMIT_KV: RateLimitKV;
 };
 
 const app = new Hono<{ Bindings: Env }>();
