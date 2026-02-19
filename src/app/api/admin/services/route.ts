@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireAdminRole } from "@/lib/auth";
 
 const schema = z.object({
   name: z.string(),
@@ -15,7 +16,21 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const isAdmin = await requireAdminRole();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: { code: "FORBIDDEN", message: "Admin role required" } },
+      { status: 403 }
+    );
+  }
+
   const parsed = schema.safeParse(await req.json());
-  if (!parsed.success) return NextResponse.json({ error: { code: "VALIDATION_ERROR", message: parsed.error.message } }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: { code: "VALIDATION_ERROR", message: parsed.error.message } },
+      { status: 400 }
+    );
+  }
+
   return NextResponse.json({ data: parsed.data, message: "Created" }, { status: 201 });
 }

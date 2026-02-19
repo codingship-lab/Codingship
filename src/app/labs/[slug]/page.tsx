@@ -7,12 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getPublishedServiceBySlug, listPublishedServices } from "@/lib/services";
 
+function renderSafeMarkdown(markdown: string) {
+  // Escape raw HTML in user-provided markdown before converting to HTML.
+  const escaped = markdown.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return marked.parse(escaped, { async: false }) as string;
+}
+
 export default async function ServiceDetailsPage({
   params
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const service = await getPublishedServiceBySlug(params.slug);
+  const { slug } = await params;
+  const service = await getPublishedServiceBySlug(slug);
   if (!service) notFound();
 
   const services = await listPublishedServices();
@@ -39,7 +46,7 @@ export default async function ServiceDetailsPage({
           <h2 className="mb-4 text-2xl font-semibold">About / Use cases / Examples</h2>
           <div
             className="prose prose-neutral max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: marked.parse(service.full_description) }}
+            dangerouslySetInnerHTML={{ __html: renderSafeMarkdown(service.full_description) }}
           />
         </section>
 

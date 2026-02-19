@@ -1,18 +1,25 @@
 import { supabaseServer } from "@/lib/supabase-server";
 
 export async function getCurrentUserRole() {
-  const supabase = supabaseServer();
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null;
+  }
+
+  const supabase = await supabaseServer();
   const {
-    data: { user }
+    data: { user },
+    error: userError
   } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (userError || !user) return null;
 
-  const { data } = await supabase
+  const { data, error: roleError } = await supabase
     .from("roles")
     .select("role")
     .eq("user_id", user.id)
     .maybeSingle();
+
+  if (roleError) return null;
 
   return data?.role ?? null;
 }

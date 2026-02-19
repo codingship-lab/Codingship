@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { cors } from "hono/cors";
 import { z } from "zod";
 
@@ -38,14 +38,14 @@ const serviceSchema = z.object({
   published: z.boolean(),
   embed_url: z.string().nullable().optional(),
   external_url: z.string().nullable().optional(),
-  embed_policy: z.enum(["allow", "deny"]) 
+  embed_policy: z.enum(["allow", "deny"])
 });
 
-async function rateLimit(c: any, keySuffix: string) {
+async function rateLimit(c: Context<{ Bindings: Env }>, keySuffix: string) {
   const ip = c.req.header("cf-connecting-ip") ?? "unknown";
   const key = `rate:${ip}:${keySuffix}:${Math.floor(Date.now() / 60000)}`;
   const count = Number((await c.env.RATE_LIMIT_KV.get(key)) ?? "0");
-  if (count > 30) return false;
+  if (count >= 30) return false;
   await c.env.RATE_LIMIT_KV.put(key, String(count + 1), { expirationTtl: 120 });
   return true;
 }

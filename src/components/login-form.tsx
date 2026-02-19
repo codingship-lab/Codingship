@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export function LoginForm() {
-  const supabase = supabaseBrowser();
   const [email, setEmail] = useState("");
+  const hasSupabaseEnv =
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   return (
     <div className="mx-auto max-w-md rounded-xl3 border border-border bg-panel p-8">
@@ -28,12 +30,27 @@ export function LoginForm() {
         <Button
           className="w-full"
           onClick={async () => {
-            await supabase.auth.signInWithOtp({
+            if (!hasSupabaseEnv) {
+              alert("Supabase env is not configured.");
+              return;
+            }
+
+            const supabase = supabaseBrowser();
+            if (!supabase) {
+              alert("Supabase env is not configured.");
+              return;
+            }
+
+            const { error } = await supabase.auth.signInWithOtp({
               email,
               options: {
-                emailRedirectTo: `${window.location.origin}/api/auth/callback`
+                emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/labs`
               }
             });
+            if (error) {
+              alert(error.message);
+              return;
+            }
             alert("Magic link sent");
           }}
         >
@@ -43,10 +60,24 @@ export function LoginForm() {
           variant="outline"
           className="w-full"
           onClick={async () => {
-            await supabase.auth.signInWithOAuth({
+            if (!hasSupabaseEnv) {
+              alert("Supabase env is not configured.");
+              return;
+            }
+
+            const supabase = supabaseBrowser();
+            if (!supabase) {
+              alert("Supabase env is not configured.");
+              return;
+            }
+
+            const { error } = await supabase.auth.signInWithOAuth({
               provider: "google",
-              options: { redirectTo: `${window.location.origin}/api/auth/callback` }
+              options: { redirectTo: `${window.location.origin}/api/auth/callback?next=/labs` }
             });
+            if (error) {
+              alert(error.message);
+            }
           }}
         >
           Continue with Google
